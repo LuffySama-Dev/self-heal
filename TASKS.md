@@ -27,7 +27,7 @@
 
 ## Further work
 
-- [ ] Integrate Simulithic after hosted access is available.
+- [ ] Future: implement and validate Simulithic integration before publishing setup instructions (coming soon).
 - [ ] Expand repeated experiments before making general performance claims.
 - [ ] Exercise live failed-rollout recovery and external monitoring of the observability/delivery stack.
 

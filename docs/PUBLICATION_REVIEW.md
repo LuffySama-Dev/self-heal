@@ -22,6 +22,6 @@ The scanner reports locations and categories without printing matched secret val
 
 ## Remaining release work
 
-A complete fresh installation on another host has not been tested. External account setup, keyring unlocking, upstream deployment and network wiring remain operator steps. Simulithic integration is pending access. The lab is not a general production remediation system.
+A complete fresh installation on another host has not been tested. External account setup, keyring unlocking, upstream deployment and network wiring remain operator steps. Simulithic is marked coming soon and excluded from the setup workflow. The lab is not a general production remediation system.
 
 After the initial preparation, the integration was committed and pushed at the owner’s request. The owner subsequently made the repository public. Further review covers reachable Git history as well as current files; no history rewrite is needed unless a real exposure is found.

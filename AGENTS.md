@@ -4,7 +4,7 @@
 
 Read README.md and TASKS.md for capabilities, evidence and remaining work. This repository integrates OpenTelemetry Demo, SigNoz, Hermes and Graphify into an isolated repair lab. Distinguish our integration code from upstream products. Explain demonstrated behavior and limitations accurately; do not claim general production readiness.
 
-Use SETUP.md and docs/HERMES_SETUP.md for installation. Dated module reports are historical evidence, not current setup requirements. Fault-explorer contains design material; Simulithic is preparation only. Upstream repositories remain separate. Preserve LICENSE and THIRD_PARTY_NOTICES.md.
+Use SETUP.md and docs/HERMES_SETUP.md for installation. Dated module reports are historical evidence, not current setup requirements. Fault-explorer contains design material; Simulithic is coming soon: do not instruct users to install or configure it for the current project. Upstream repositories remain separate. Preserve LICENSE and THIRD_PARTY_NOTICES.md.
 
 ## Help users set up
 

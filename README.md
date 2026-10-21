@@ -40,7 +40,7 @@ Alerts go directly through the relay to Hermes; Slack or Telegram is not require
 | [Incident Live](modules/incident-live/README.md) | Native SigNoz dashboard and evidence adapter for alert receipt, investigation, patches, tests, deployment and recovery; incident counters and stage timings. |
 | [Fault injector](modules/fault-injector/README.md) | Random service and compatible source-mutation selection, qualification before rollout, bounded observation and cleanup. |
 | [Availability](modules/availability/README.md) | Scheduled lab requests, independent TCP checks, monitor heartbeats and missing-span alerts. |
-| [Simulithic](modules/simulithic/README.md) | CLI preparation only; hosted access and end-to-end testing integration remain pending. |
+| [Simulithic](modules/simulithic/README.md) | **Coming soon.** Not required for setup; no installation or configuration needed. |
 
 The upstream OTel Demo, SigNoz, Hermes and Graphify installations are kept outside this repository. This repository holds our integration code, configuration, tests, documentation and selected evidence—not vendored copies of those products or their runtime data.
 
