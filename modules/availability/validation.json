@@ -1,0 +1,32 @@
+[
+  {
+    "case": "healthy",
+    "value": 0,
+    "expected": 0
+  },
+  {
+    "case": "service_down",
+    "value": 1,
+    "expected": 1
+  },
+  {
+    "case": "telemetry_missing",
+    "value": 1,
+    "expected": 1
+  },
+  {
+    "case": "monitor_missing",
+    "value": 1,
+    "expected": 1
+  },
+  {
+    "case": "everything_missing",
+    "value": 1,
+    "expected": 1
+  },
+  {
+    "case": "brief_failed_probe",
+    "value": 0,
+    "expected": 0
+  }
+]

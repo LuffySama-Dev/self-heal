@@ -1,0 +1,35 @@
+# Python and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+# Credentials and local overrides
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+auth.json
+credentials.json
+# Local dependency/runtime state
+node_modules/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.log
+.DS_Store
+# Per-installation config, generated units and private operational evidence
+.local/
+*.local.json
+
+# Keep personal discussion exports and host schedules local
+/docs/PROJECT_GUIDE.md
+/docs/OPERATIONS.md
+/docs/HERMES_PROMPT.md
+/config/lab-schedule.service.in
+/config/lab-schedule.timer
+/scripts/lab_schedule.py
+/tests/test_schedule.py

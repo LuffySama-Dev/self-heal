@@ -1,0 +1,218 @@
+{
+  "payment": {
+    "alert": "Repair lab - payment availability or telemetry missing",
+    "alertType": "TRACES_BASED_ALERT",
+    "description": "No reachable TCP probe for 2 minutes, no monitor samples for 2 minutes, or no expected server spans for 5 minutes. Evaluated every minute with SigNoz data delay. Scheduled lab requests run every 30 seconds.",
+    "ruleType": "threshold_rule",
+    "version": "v5",
+    "schemaVersion": "v2alpha1",
+    "condition": {
+      "compositeQuery": {
+        "queries": [
+          {
+            "type": "clickhouse_sql",
+            "spec": {
+              "name": "A",
+              "query": "WITH {{.end_datetime}} AS evaluation_end,\nprobes AS (SELECT count() AS samples, countIf(attributes_string['availability.reachable']='true') AS reachable\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN (SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource WHERE simpleJSONExtractString(labels,'service.name')='self-heal-availability')\n AND attributes_string['availability.service']='payment-repair-lab'\n AND timestamp >= toUnixTimestamp64Nano(toDateTime64(evaluation_end,9)-INTERVAL 2 MINUTE)\n AND timestamp < toUnixTimestamp64Nano(toDateTime64(evaluation_end,9))),\ntraces AS (SELECT count() AS spans FROM signoz_traces.signoz_index_v3\n WHERE serviceName='payment-repair-lab' AND kind=2 AND resources_string['service.namespace']='self-heal-repair-lab'\n AND timestamp>=evaluation_end-INTERVAL 5 MINUTE AND timestamp<evaluation_end)\nSELECT evaluation_end AS ts, toFloat64(samples=0 OR reachable=0 OR spans=0) AS value FROM probes CROSS JOIN traces\n",
+              "disabled": false,
+              "legend": ""
+            }
+          }
+        ],
+        "panelType": "graph",
+        "queryType": "clickhouse_sql",
+        "unit": "none"
+      },
+      "selectedQueryName": "A",
+      "requireMinPoints": false,
+      "requiredNumPoints": 1,
+      "thresholds": {
+        "kind": "basic",
+        "spec": [
+          {
+            "name": "warning",
+            "target": 0.5,
+            "targetUnit": "",
+            "recoveryTarget": null,
+            "matchType": "all_the_times",
+            "op": "above",
+            "channels": [
+              "Self-Heal Hermes"
+            ]
+          }
+        ]
+      }
+    },
+    "evaluation": {
+      "kind": "rolling",
+      "spec": {
+        "evalWindow": "2m",
+        "frequency": "1m"
+      }
+    },
+    "notificationSettings": {
+      "groupBy": [
+        "alertname"
+      ],
+      "renotify": {
+        "enabled": false
+      },
+      "usePolicy": false
+    },
+    "labels": {
+      "service.name": "payment-repair-lab",
+      "service.namespace": "self-heal-repair-lab",
+      "severity": "warning",
+      "incident.kind": "availability"
+    },
+    "annotations": {
+      "summary": "payment availability/telemetry gap",
+      "description": "Investigate this isolated lab service. Read MULTISERVICE-LAB.md in the configured repair checkout. Verify telemetry and runtime identity before making changes."
+    },
+    "disabled": true
+  },
+  "recommendation": {
+    "alert": "Repair lab - recommendation availability or telemetry missing",
+    "alertType": "TRACES_BASED_ALERT",
+    "description": "No reachable TCP probe for 2 minutes, no monitor samples for 2 minutes, or no expected server spans for 5 minutes. Evaluated every minute with SigNoz data delay. Scheduled lab requests run every 30 seconds.",
+    "ruleType": "threshold_rule",
+    "version": "v5",
+    "schemaVersion": "v2alpha1",
+    "condition": {
+      "compositeQuery": {
+        "queries": [
+          {
+            "type": "clickhouse_sql",
+            "spec": {
+              "name": "A",
+              "query": "WITH {{.end_datetime}} AS evaluation_end,\nprobes AS (SELECT count() AS samples, countIf(attributes_string['availability.reachable']='true') AS reachable\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN (SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource WHERE simpleJSONExtractString(labels,'service.name')='self-heal-availability')\n AND attributes_string['availability.service']='recommendation-repair-lab'\n AND timestamp >= toUnixTimestamp64Nano(toDateTime64(evaluation_end,9)-INTERVAL 2 MINUTE)\n AND timestamp < toUnixTimestamp64Nano(toDateTime64(evaluation_end,9))),\ntraces AS (SELECT count() AS spans FROM signoz_traces.signoz_index_v3\n WHERE serviceName='recommendation-repair-lab' AND kind=2 AND resources_string['service.namespace']='self-heal-repair-lab'\n AND timestamp>=evaluation_end-INTERVAL 5 MINUTE AND timestamp<evaluation_end)\nSELECT evaluation_end AS ts, toFloat64(samples=0 OR reachable=0 OR spans=0) AS value FROM probes CROSS JOIN traces\n",
+              "disabled": false,
+              "legend": ""
+            }
+          }
+        ],
+        "panelType": "graph",
+        "queryType": "clickhouse_sql",
+        "unit": "none"
+      },
+      "selectedQueryName": "A",
+      "requireMinPoints": false,
+      "requiredNumPoints": 1,
+      "thresholds": {
+        "kind": "basic",
+        "spec": [
+          {
+            "name": "warning",
+            "target": 0.5,
+            "targetUnit": "",
+            "recoveryTarget": null,
+            "matchType": "all_the_times",
+            "op": "above",
+            "channels": [
+              "Self-Heal Hermes"
+            ]
+          }
+        ]
+      }
+    },
+    "evaluation": {
+      "kind": "rolling",
+      "spec": {
+        "evalWindow": "2m",
+        "frequency": "1m"
+      }
+    },
+    "notificationSettings": {
+      "groupBy": [
+        "alertname"
+      ],
+      "renotify": {
+        "enabled": false
+      },
+      "usePolicy": false
+    },
+    "labels": {
+      "service.name": "recommendation-repair-lab",
+      "service.namespace": "self-heal-repair-lab",
+      "severity": "warning",
+      "incident.kind": "availability"
+    },
+    "annotations": {
+      "summary": "recommendation availability/telemetry gap",
+      "description": "Investigate this isolated lab service. Read MULTISERVICE-LAB.md in the configured repair checkout. Verify telemetry and runtime identity before making changes."
+    },
+    "disabled": true
+  },
+  "quote": {
+    "alert": "Repair lab - quote availability or telemetry missing",
+    "alertType": "TRACES_BASED_ALERT",
+    "description": "No reachable TCP probe for 2 minutes, no monitor samples for 2 minutes, or no expected server spans for 5 minutes. Evaluated every minute with SigNoz data delay. Scheduled lab requests run every 30 seconds.",
+    "ruleType": "threshold_rule",
+    "version": "v5",
+    "schemaVersion": "v2alpha1",
+    "condition": {
+      "compositeQuery": {
+        "queries": [
+          {
+            "type": "clickhouse_sql",
+            "spec": {
+              "name": "A",
+              "query": "WITH {{.end_datetime}} AS evaluation_end,\nprobes AS (SELECT count() AS samples, countIf(attributes_string['availability.reachable']='true') AS reachable\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN (SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource WHERE simpleJSONExtractString(labels,'service.name')='self-heal-availability')\n AND attributes_string['availability.service']='quote-repair-lab'\n AND timestamp >= toUnixTimestamp64Nano(toDateTime64(evaluation_end,9)-INTERVAL 2 MINUTE)\n AND timestamp < toUnixTimestamp64Nano(toDateTime64(evaluation_end,9))),\ntraces AS (SELECT count() AS spans FROM signoz_traces.signoz_index_v3\n WHERE serviceName='quote-repair-lab' AND kind=2 AND resources_string['service.namespace']='self-heal-repair-lab'\n AND timestamp>=evaluation_end-INTERVAL 5 MINUTE AND timestamp<evaluation_end)\nSELECT evaluation_end AS ts, toFloat64(samples=0 OR reachable=0 OR spans=0) AS value FROM probes CROSS JOIN traces\n",
+              "disabled": false,
+              "legend": ""
+            }
+          }
+        ],
+        "panelType": "graph",
+        "queryType": "clickhouse_sql",
+        "unit": "none"
+      },
+      "selectedQueryName": "A",
+      "requireMinPoints": false,
+      "requiredNumPoints": 1,
+      "thresholds": {
+        "kind": "basic",
+        "spec": [
+          {
+            "name": "warning",
+            "target": 0.5,
+            "targetUnit": "",
+            "recoveryTarget": null,
+            "matchType": "all_the_times",
+            "op": "above",
+            "channels": [
+              "Self-Heal Hermes"
+            ]
+          }
+        ]
+      }
+    },
+    "evaluation": {
+      "kind": "rolling",
+      "spec": {
+        "evalWindow": "2m",
+        "frequency": "1m"
+      }
+    },
+    "notificationSettings": {
+      "groupBy": [
+        "alertname"
+      ],
+      "renotify": {
+        "enabled": false
+      },
+      "usePolicy": false
+    },
+    "labels": {
+      "service.name": "quote-repair-lab",
+      "service.namespace": "self-heal-repair-lab",
+      "severity": "warning",
+      "incident.kind": "availability"
+    },
+    "annotations": {
+      "summary": "quote availability/telemetry gap",
+      "description": "Investigate this isolated lab service. Read MULTISERVICE-LAB.md in the configured repair checkout. Verify telemetry and runtime identity before making changes."
+    },
+    "disabled": true
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "projects_dir": "~/projects",
+  "checkout_dir": "~/projects/otel-demo-repair-lab",
+  "payment_dir": "~/projects/payment-repair-drill",
+  "labs_dir": "~/projects/self-heal-labs",
+  "hermes_home": "~/.hermes",
+  "hermes_bin": "~/.local/bin/hermes",
+  "signoz_mcp_bin": "~/projects/signoz-mcp-server/bin/signoz-mcp-server",
+  "incident_state_dir": "~/projects/incident-live-data",
+  "docker_host": "unix:///var/run/docker.sock",
+  "docker_network": "opentelemetry-demo",
+  "image_prefix": "ghcr.io/open-telemetry/demo:3.1.0-",
+  "collector_grpc_url": "http://otel-collector:4317",
+  "collector_http_url": "http://otel-collector:4318",
+  "signoz_url": "http://127.0.0.1:8080",
+  "otlp_logs_url": "http://127.0.0.1:4318/v1/logs",
+  "relay_host": "127.0.0.1",
+  "relay_port": 8645,
+  "hermes_webhook_url": "http://127.0.0.1:8644/webhooks/signoz",
+  "clickhouse_container": "signoz-clickhouse"
+}

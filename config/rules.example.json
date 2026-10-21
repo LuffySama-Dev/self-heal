@@ -1,0 +1,12 @@
+{
+  "symptom": {
+    "payment": "REPLACE_PAYMENT_RULE_ID",
+    "recommendation": "REPLACE_RECOMMENDATION_RULE_ID",
+    "quote": "REPLACE_QUOTE_RULE_ID"
+  },
+  "availability": {
+    "payment": "REPLACE_PAYMENT_AVAILABILITY_RULE_ID",
+    "recommendation": "REPLACE_RECOMMENDATION_AVAILABILITY_RULE_ID",
+    "quote": "REPLACE_QUOTE_AVAILABILITY_RULE_ID"
+  }
+}

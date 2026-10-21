@@ -1,0 +1,1080 @@
+{
+  "schemaVersion": "v6",
+  "tags": [
+    {
+      "key": "project",
+      "value": "self-heal"
+    }
+  ],
+  "spec": {
+    "display": {
+      "name": "Incident Live \u2014 Hermes repair labs",
+      "description": "Observed isolated-lab telemetry and recorded Hermes actions. No inferred stage completion."
+    },
+    "variables": [],
+    "panels": {
+      "delivery": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Alert and recovery received by Hermes",
+            "description": ""
+          },
+          "plugin": {
+            "kind": "signoz/ListPanel",
+            "spec": {
+              "selectFields": [
+                {
+                  "name": "timestamp",
+                  "signal": "logs",
+                  "fieldContext": "log",
+                  "fieldDataType": ""
+                },
+                {
+                  "name": "self_heal.service",
+                  "fieldContext": "attribute",
+                  "fieldDataType": "string",
+                  "signal": "logs"
+                },
+                {
+                  "name": "self_heal.stage",
+                  "signal": "logs",
+                  "fieldContext": "attribute",
+                  "fieldDataType": "string"
+                },
+                {
+                  "name": "body",
+                  "signal": "logs",
+                  "fieldContext": "log",
+                  "fieldDataType": "string"
+                }
+              ]
+            }
+          },
+          "queries": [
+            {
+              "kind": "raw",
+              "spec": {
+                "name": "A",
+                "plugin": {
+                  "kind": "signoz/BuilderQuery",
+                  "spec": {
+                    "name": "A",
+                    "signal": "logs",
+                    "source": "",
+                    "disabled": false,
+                    "filter": {
+                      "expression": "resource.service.name = 'self-heal-incident-live' AND self_heal.stage IN ['alert_received', 'recovery_received', 'recovery_followup_complete']"
+                    },
+                    "order": [
+                      {
+                        "key": {
+                          "name": "timestamp",
+                          "signal": "",
+                          "fieldContext": "",
+                          "fieldDataType": ""
+                        },
+                        "direction": "desc"
+                      },
+                      {
+                        "key": {
+                          "name": "id",
+                          "signal": "",
+                          "fieldContext": "",
+                          "fieldDataType": ""
+                        },
+                        "direction": "desc"
+                      }
+                    ],
+                    "selectFields": [
+                      {
+                        "name": "timestamp",
+                        "signal": "logs",
+                        "fieldContext": "log",
+                        "fieldDataType": ""
+                      },
+                      {
+                        "name": "self_heal.service",
+                        "fieldContext": "attribute",
+                        "fieldDataType": "string",
+                        "signal": "logs"
+                      },
+                      {
+                        "name": "self_heal.stage",
+                        "signal": "logs",
+                        "fieldContext": "attribute",
+                        "fieldDataType": "string"
+                      },
+                      {
+                        "name": "body",
+                        "signal": "logs",
+                        "fieldContext": "log",
+                        "fieldDataType": "string"
+                      }
+                    ],
+                    "limit": 100,
+                    "legend": ""
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "errors": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Errors or slow requests (%) by service",
+            "description": ""
+          },
+          "plugin": {
+            "kind": "signoz/TimeSeriesPanel",
+            "spec": {
+              "visualization": {
+                "timePreference": "global_time",
+                "fillSpans": false
+              },
+              "formatting": {
+                "unit": "percent",
+                "decimalPrecision": "2"
+              },
+              "chartAppearance": {
+                "lineInterpolation": "spline",
+                "showPoints": false,
+                "lineStyle": "solid",
+                "fillMode": "none",
+                "spanGaps": {
+                  "fillOnlyBelow": false,
+                  "fillLessThan": ""
+                }
+              },
+              "axes": {
+                "softMin": 0,
+                "softMax": 0,
+                "isLogScale": false
+              },
+              "legend": {
+                "position": "bottom",
+                "mode": "list",
+                "customColors": null
+              },
+              "thresholds": null
+            }
+          },
+          "queries": [
+            {
+              "kind": "time_series",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "clickhouse_sql",
+                        "spec": {
+                          "name": "A",
+                          "query": "SELECT toStartOfMinute(timestamp) AS ts, serviceName AS service, 100.0 * countIf(has_error OR duration_nano >= 1000000000 OR traceID GLOBAL IN (SELECT traceID FROM signoz_traces.signoz_index_v3 WHERE timestamp >= fromUnixTimestamp64Milli($start_timestamp_ms) AND timestamp <= fromUnixTimestamp64Milli($end_timestamp_ms) AND serviceName = 'recommendation-repair-lab' AND kind = 1 AND has_error)) / count() AS value FROM signoz_traces.signoz_index_v3 WHERE serviceName IN ('payment-repair-lab','recommendation-repair-lab','quote-repair-lab') AND kind=2 AND resources_string['service.namespace']='self-heal-repair-lab' AND timestamp >= fromUnixTimestamp64Milli($start_timestamp_ms) AND timestamp <= fromUnixTimestamp64Milli($end_timestamp_ms) GROUP BY ts, service ORDER BY ts",
+                          "disabled": false,
+                          "legend": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "evidence": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Fix, regression tests and deployment evidence",
+            "description": ""
+          },
+          "plugin": {
+            "kind": "signoz/ListPanel",
+            "spec": {
+              "selectFields": [
+                {
+                  "name": "timestamp",
+                  "signal": "logs",
+                  "fieldContext": "log",
+                  "fieldDataType": ""
+                },
+                {
+                  "name": "self_heal.service",
+                  "fieldContext": "attribute",
+                  "fieldDataType": "string",
+                  "signal": "logs"
+                },
+                {
+                  "name": "self_heal.stage",
+                  "signal": "logs",
+                  "fieldContext": "attribute",
+                  "fieldDataType": "string"
+                },
+                {
+                  "name": "body",
+                  "signal": "logs",
+                  "fieldContext": "log",
+                  "fieldDataType": "string"
+                }
+              ]
+            }
+          },
+          "queries": [
+            {
+              "kind": "raw",
+              "spec": {
+                "name": "A",
+                "plugin": {
+                  "kind": "signoz/BuilderQuery",
+                  "spec": {
+                    "name": "A",
+                    "signal": "logs",
+                    "source": "",
+                    "disabled": false,
+                    "filter": {
+                      "expression": "resource.service.name = 'self-heal-incident-live' AND self_heal.stage IN ['fix_applied', 'tests', 'deployment']"
+                    },
+                    "order": [
+                      {
+                        "key": {
+                          "name": "timestamp",
+                          "signal": "",
+                          "fieldContext": "",
+                          "fieldDataType": ""
+                        },
+                        "direction": "desc"
+                      },
+                      {
+                        "key": {
+                          "name": "id",
+                          "signal": "",
+                          "fieldContext": "",
+                          "fieldDataType": ""
+                        },
+                        "direction": "desc"
+                      }
+                    ],
+                    "selectFields": [
+                      {
+                        "name": "timestamp",
+                        "signal": "logs",
+                        "fieldContext": "log",
+                        "fieldDataType": ""
+                      },
+                      {
+                        "name": "self_heal.service",
+                        "fieldContext": "attribute",
+                        "fieldDataType": "string",
+                        "signal": "logs"
+                      },
+                      {
+                        "name": "self_heal.stage",
+                        "signal": "logs",
+                        "fieldContext": "attribute",
+                        "fieldDataType": "string"
+                      },
+                      {
+                        "name": "body",
+                        "signal": "logs",
+                        "fieldContext": "log",
+                        "fieldDataType": "string"
+                      }
+                    ],
+                    "limit": 100,
+                    "legend": ""
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "guide": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Incident Live \u2014 payment, recommendation and quote labs",
+            "description": ""
+          },
+          "plugin": {
+            "kind": "signoz/TextPanel",
+            "spec": {
+              "mode": "markdown",
+              "text": "**Issue \u2192 alert received \u2192 investigation \u2192 source patch \u2192 tests \u2192 deployment \u2192 recovery notification.**\n\nSet auto-refresh for a live drill. Expand log rows for evidence. Historical events retain their original timestamps and carry `self_heal.backfilled=true`. Previous automatic drill: **20 Oct 2026, 09:55\u201310:20 UTC / 15:25\u201315:50 IST**.\n\nAn empty chart means **no observed traffic**, not healthy. Tool response \u2260 successful diagnosis. Deployment is shown from its result artifact; recovery notification is shown only when Hermes receives it. The adapter heartbeat is separate from application health. Filter an incident in Logs Explorer using `self_heal.incident` from a row.\n\n**Multiple services:** panels include payment, recommendation and quote labs. Timing panels describe the latest incident in the selected range. Requests taking at least one second are considered slow. Older imported records may have no service column; their incident ID identifies the alert rule.",
+              "presentation": {
+                "textAlign": "left",
+                "verticalAlign": "top"
+              },
+              "headerOptions": {
+                "hide": false
+              }
+            }
+          },
+          "queries": [],
+          "links": []
+        }
+      },
+      "heartbeat": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Adapter heartbeat \u2014 independent of application health",
+            "description": ""
+          },
+          "plugin": {
+            "kind": "signoz/ListPanel",
+            "spec": {
+              "selectFields": [
+                {
+                  "name": "timestamp",
+                  "signal": "logs",
+                  "fieldContext": "log",
+                  "fieldDataType": ""
+                },
+                {
+                  "name": "self_heal.service",
+                  "fieldContext": "attribute",
+                  "fieldDataType": "string",
+                  "signal": "logs"
+                },
+                {
+                  "name": "self_heal.stage",
+                  "signal": "logs",
+                  "fieldContext": "attribute",
+                  "fieldDataType": "string"
+                },
+                {
+                  "name": "body",
+                  "signal": "logs",
+                  "fieldContext": "log",
+                  "fieldDataType": "string"
+                }
+              ]
+            }
+          },
+          "queries": [
+            {
+              "kind": "raw",
+              "spec": {
+                "name": "A",
+                "plugin": {
+                  "kind": "signoz/BuilderQuery",
+                  "spec": {
+                    "name": "A",
+                    "signal": "logs",
+                    "source": "",
+                    "disabled": false,
+                    "filter": {
+                      "expression": "resource.service.name = 'self-heal-incident-live' AND self_heal.stage = 'heartbeat'"
+                    },
+                    "order": [
+                      {
+                        "key": {
+                          "name": "timestamp",
+                          "signal": "",
+                          "fieldContext": "",
+                          "fieldDataType": ""
+                        },
+                        "direction": "desc"
+                      },
+                      {
+                        "key": {
+                          "name": "id",
+                          "signal": "",
+                          "fieldContext": "",
+                          "fieldDataType": ""
+                        },
+                        "direction": "desc"
+                      }
+                    ],
+                    "selectFields": [
+                      {
+                        "name": "timestamp",
+                        "signal": "logs",
+                        "fieldContext": "log",
+                        "fieldDataType": ""
+                      },
+                      {
+                        "name": "self_heal.service",
+                        "fieldContext": "attribute",
+                        "fieldDataType": "string",
+                        "signal": "logs"
+                      },
+                      {
+                        "name": "self_heal.stage",
+                        "signal": "logs",
+                        "fieldContext": "attribute",
+                        "fieldDataType": "string"
+                      },
+                      {
+                        "name": "body",
+                        "signal": "logs",
+                        "fieldContext": "log",
+                        "fieldDataType": "string"
+                      }
+                    ],
+                    "limit": 100,
+                    "legend": ""
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "incident_ongoing": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Ongoing Incidents",
+            "description": "Unique lab incidents overlapping the selected time range, as of its end. Recovery is based on Hermes receiving the resolved webhook. Retained evidence only; missing delivery is not proof of application failure."
+          },
+          "plugin": {
+            "kind": "signoz/NumberPanel",
+            "spec": {
+              "visualization": {
+                "timePreference": "global_time"
+              },
+              "formatting": {
+                "unit": "",
+                "decimalPrecision": "2"
+              },
+              "thresholds": null
+            }
+          },
+          "queries": [
+            {
+              "kind": "scalar",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "clickhouse_sql",
+                        "spec": {
+                          "name": "A",
+                          "query": "WITH resources AS (\n SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource\n WHERE simpleJSONExtractString(labels, 'service.name') = 'self-heal-incident-live'\n), incidents AS (\n SELECT attributes_string['self_heal.incident'] AS incident,\n minIf(timestamp, attributes_string['self_heal.stage'] = 'alert_received') AS opened,\n maxIf(timestamp, attributes_string['self_heal.stage'] = 'recovery_received') AS closed,\n countIf(attributes_string['self_heal.stage'] = 'alert_received') AS firing_events\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN resources\n AND attributes_string['self_heal.incident'] != ''\n AND attributes_string['self_heal.stage'] IN ('alert_received', 'recovery_received')\n AND timestamp <= $end_timestamp_nano\n GROUP BY incident\n)\nSELECT toFloat64(countIf(closed = 0)) AS value FROM incidents\nWHERE firing_events > 0 AND (closed = 0 OR closed >= $start_timestamp_nano)\n",
+                          "disabled": false,
+                          "legend": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "incident_resolved": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Resolved Incidents",
+            "description": "Unique lab incidents overlapping the selected time range, as of its end. Recovery is based on Hermes receiving the resolved webhook. Retained evidence only; missing delivery is not proof of application failure."
+          },
+          "plugin": {
+            "kind": "signoz/NumberPanel",
+            "spec": {
+              "visualization": {
+                "timePreference": "global_time"
+              },
+              "formatting": {
+                "unit": "",
+                "decimalPrecision": "2"
+              },
+              "thresholds": null
+            }
+          },
+          "queries": [
+            {
+              "kind": "scalar",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "clickhouse_sql",
+                        "spec": {
+                          "name": "A",
+                          "query": "WITH resources AS (\n SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource\n WHERE simpleJSONExtractString(labels, 'service.name') = 'self-heal-incident-live'\n), incidents AS (\n SELECT attributes_string['self_heal.incident'] AS incident,\n minIf(timestamp, attributes_string['self_heal.stage'] = 'alert_received') AS opened,\n maxIf(timestamp, attributes_string['self_heal.stage'] = 'recovery_received') AS closed,\n countIf(attributes_string['self_heal.stage'] = 'alert_received') AS firing_events\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN resources\n AND attributes_string['self_heal.incident'] != ''\n AND attributes_string['self_heal.stage'] IN ('alert_received', 'recovery_received')\n AND timestamp <= $end_timestamp_nano\n GROUP BY incident\n)\nSELECT toFloat64(countIf(closed > 0)) AS value FROM incidents\nWHERE firing_events > 0 AND (closed = 0 OR closed >= $start_timestamp_nano)\n",
+                          "disabled": false,
+                          "legend": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "incident_total": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Total Incident Count",
+            "description": "Unique lab incidents overlapping the selected time range, as of its end. Recovery is based on Hermes receiving the resolved webhook. Retained evidence only; missing delivery is not proof of application failure."
+          },
+          "plugin": {
+            "kind": "signoz/NumberPanel",
+            "spec": {
+              "visualization": {
+                "timePreference": "global_time"
+              },
+              "formatting": {
+                "unit": "",
+                "decimalPrecision": "2"
+              },
+              "thresholds": null
+            }
+          },
+          "queries": [
+            {
+              "kind": "scalar",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "clickhouse_sql",
+                        "spec": {
+                          "name": "A",
+                          "query": "WITH resources AS (\n SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource\n WHERE simpleJSONExtractString(labels, 'service.name') = 'self-heal-incident-live'\n), incidents AS (\n SELECT attributes_string['self_heal.incident'] AS incident,\n minIf(timestamp, attributes_string['self_heal.stage'] = 'alert_received') AS opened,\n maxIf(timestamp, attributes_string['self_heal.stage'] = 'recovery_received') AS closed,\n countIf(attributes_string['self_heal.stage'] = 'alert_received') AS firing_events\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN resources\n AND attributes_string['self_heal.incident'] != ''\n AND attributes_string['self_heal.stage'] IN ('alert_received', 'recovery_received')\n AND timestamp <= $end_timestamp_nano\n GROUP BY incident\n)\nSELECT toFloat64(count()) AS value FROM incidents\nWHERE firing_events > 0 AND (closed = 0 OR closed >= $start_timestamp_nano)\n",
+                          "disabled": false,
+                          "legend": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "time_deploy": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Deployment (seconds)",
+            "description": "Latest incident overlapping selected range, as of range end. Deployment helper start \u2192 deployed_verified. Includes helper candidate tests and live probes. Failed or unfinished deployment has no completed duration. Missing milestones show no data. Event-time replay uses evidence delivered later; historical views are not an as-known-at-the-time audit."
+          },
+          "plugin": {
+            "kind": "signoz/NumberPanel",
+            "spec": {
+              "visualization": {
+                "timePreference": "global_time"
+              },
+              "formatting": {
+                "unit": "",
+                "decimalPrecision": "2"
+              },
+              "thresholds": null
+            }
+          },
+          "queries": [
+            {
+              "kind": "scalar",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "clickhouse_sql",
+                        "spec": {
+                          "name": "A",
+                          "query": "WITH resources AS (\n SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource\n WHERE simpleJSONExtractString(labels, 'service.name') = 'self-heal-incident-live'\n), incidents AS (\n SELECT attributes_string['self_heal.incident'] AS incident,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_fired') AS fired,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_received') AS received,\n minIf(timestamp, attributes_string['self_heal.stage']='repair_started') AS repair,\n minIf(timestamp, attributes_string['self_heal.stage']='deployment_started') AS deploy,\n minIf(timestamp, attributes_string['self_heal.stage']='deployment_verified') AS verified,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_resolved') AS resolved,\n minIf(timestamp, attributes_string['self_heal.stage']='recovery_received') AS closed\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN resources\n AND attributes_string['self_heal.incident'] != ''\n AND timestamp <= $end_timestamp_nano\n GROUP BY incident\n), latest AS (\n SELECT * FROM incidents WHERE received > 0 AND (closed = 0 OR closed >= $start_timestamp_nano)\n ORDER BY fired DESC, received DESC LIMIT 1\n)\nSELECT if(deploy > 0 AND verified >= deploy, (toFloat64(verified)-toFloat64(deploy))/1000000000, NULL) AS value FROM latest\n",
+                          "disabled": false,
+                          "legend": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "time_fix": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Fix and test (seconds)",
+            "description": "Latest incident overlapping selected range, as of range end. Successful source-patch attempt start \u2192 deployment helper start. Includes editing and pre-deployment regression tests. Missing milestones show no data. Event-time replay uses evidence delivered later; historical views are not an as-known-at-the-time audit."
+          },
+          "plugin": {
+            "kind": "signoz/NumberPanel",
+            "spec": {
+              "visualization": {
+                "timePreference": "global_time"
+              },
+              "formatting": {
+                "unit": "",
+                "decimalPrecision": "2"
+              },
+              "thresholds": null
+            }
+          },
+          "queries": [
+            {
+              "kind": "scalar",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "clickhouse_sql",
+                        "spec": {
+                          "name": "A",
+                          "query": "WITH resources AS (\n SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource\n WHERE simpleJSONExtractString(labels, 'service.name') = 'self-heal-incident-live'\n), incidents AS (\n SELECT attributes_string['self_heal.incident'] AS incident,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_fired') AS fired,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_received') AS received,\n minIf(timestamp, attributes_string['self_heal.stage']='repair_started') AS repair,\n minIf(timestamp, attributes_string['self_heal.stage']='deployment_started') AS deploy,\n minIf(timestamp, attributes_string['self_heal.stage']='deployment_verified') AS verified,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_resolved') AS resolved,\n minIf(timestamp, attributes_string['self_heal.stage']='recovery_received') AS closed\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN resources\n AND attributes_string['self_heal.incident'] != ''\n AND timestamp <= $end_timestamp_nano\n GROUP BY incident\n), latest AS (\n SELECT * FROM incidents WHERE received > 0 AND (closed = 0 OR closed >= $start_timestamp_nano)\n ORDER BY fired DESC, received DESC LIMIT 1\n)\nSELECT if(repair > 0 AND deploy >= repair, (toFloat64(deploy)-toFloat64(repair))/1000000000, NULL) AS value FROM latest\n",
+                          "disabled": false,
+                          "legend": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "time_investigation": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Investigation (seconds)",
+            "description": "Latest incident overlapping selected range, as of range end. Alert receipt \u2192 start of the source patch that succeeded. Includes telemetry/source inspection and reproduction; not a measure of private reasoning. Missing milestones show no data. Event-time replay uses evidence delivered later; historical views are not an as-known-at-the-time audit."
+          },
+          "plugin": {
+            "kind": "signoz/NumberPanel",
+            "spec": {
+              "visualization": {
+                "timePreference": "global_time"
+              },
+              "formatting": {
+                "unit": "",
+                "decimalPrecision": "2"
+              },
+              "thresholds": null
+            }
+          },
+          "queries": [
+            {
+              "kind": "scalar",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "clickhouse_sql",
+                        "spec": {
+                          "name": "A",
+                          "query": "WITH resources AS (\n SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource\n WHERE simpleJSONExtractString(labels, 'service.name') = 'self-heal-incident-live'\n), incidents AS (\n SELECT attributes_string['self_heal.incident'] AS incident,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_fired') AS fired,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_received') AS received,\n minIf(timestamp, attributes_string['self_heal.stage']='repair_started') AS repair,\n minIf(timestamp, attributes_string['self_heal.stage']='deployment_started') AS deploy,\n minIf(timestamp, attributes_string['self_heal.stage']='deployment_verified') AS verified,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_resolved') AS resolved,\n minIf(timestamp, attributes_string['self_heal.stage']='recovery_received') AS closed\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN resources\n AND attributes_string['self_heal.incident'] != ''\n AND timestamp <= $end_timestamp_nano\n GROUP BY incident\n), latest AS (\n SELECT * FROM incidents WHERE received > 0 AND (closed = 0 OR closed >= $start_timestamp_nano)\n ORDER BY fired DESC, received DESC LIMIT 1\n)\nSELECT if(received > 0 AND repair >= received, (toFloat64(repair)-toFloat64(received))/1000000000, NULL) AS value FROM latest\n",
+                          "disabled": false,
+                          "legend": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "time_total": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Alert firing \u2192 recovery (seconds)",
+            "description": "Latest incident overlapping selected range, as of range end. SigNoz startsAt \u2192 endsAt from authentic webhook payloads. Excludes delivery delays and Hermes follow-up time. Missing milestones show no data. Event-time replay uses evidence delivered later; historical views are not an as-known-at-the-time audit."
+          },
+          "plugin": {
+            "kind": "signoz/NumberPanel",
+            "spec": {
+              "visualization": {
+                "timePreference": "global_time"
+              },
+              "formatting": {
+                "unit": "",
+                "decimalPrecision": "2"
+              },
+              "thresholds": null
+            }
+          },
+          "queries": [
+            {
+              "kind": "scalar",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "clickhouse_sql",
+                        "spec": {
+                          "name": "A",
+                          "query": "WITH resources AS (\n SELECT fingerprint FROM signoz_logs.distributed_logs_v2_resource\n WHERE simpleJSONExtractString(labels, 'service.name') = 'self-heal-incident-live'\n), incidents AS (\n SELECT attributes_string['self_heal.incident'] AS incident,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_fired') AS fired,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_received') AS received,\n minIf(timestamp, attributes_string['self_heal.stage']='repair_started') AS repair,\n minIf(timestamp, attributes_string['self_heal.stage']='deployment_started') AS deploy,\n minIf(timestamp, attributes_string['self_heal.stage']='deployment_verified') AS verified,\n minIf(timestamp, attributes_string['self_heal.stage']='alert_resolved') AS resolved,\n minIf(timestamp, attributes_string['self_heal.stage']='recovery_received') AS closed\n FROM signoz_logs.distributed_logs_v2\n WHERE resource_fingerprint GLOBAL IN resources\n AND attributes_string['self_heal.incident'] != ''\n AND timestamp <= $end_timestamp_nano\n GROUP BY incident\n), latest AS (\n SELECT * FROM incidents WHERE received > 0 AND (closed = 0 OR closed >= $start_timestamp_nano)\n ORDER BY fired DESC, received DESC LIMIT 1\n)\nSELECT if(fired > 0 AND resolved >= fired, (toFloat64(resolved)-toFloat64(fired))/1000000000, NULL) AS value FROM latest\n",
+                          "disabled": false,
+                          "legend": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "timeline": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Incident timeline \u2014 newest first",
+            "description": ""
+          },
+          "plugin": {
+            "kind": "signoz/ListPanel",
+            "spec": {
+              "selectFields": [
+                {
+                  "name": "timestamp",
+                  "signal": "logs",
+                  "fieldContext": "log",
+                  "fieldDataType": ""
+                },
+                {
+                  "name": "self_heal.service",
+                  "fieldContext": "attribute",
+                  "fieldDataType": "string",
+                  "signal": "logs"
+                },
+                {
+                  "name": "self_heal.stage",
+                  "signal": "logs",
+                  "fieldContext": "attribute",
+                  "fieldDataType": "string"
+                },
+                {
+                  "name": "body",
+                  "signal": "logs",
+                  "fieldContext": "log",
+                  "fieldDataType": "string"
+                }
+              ]
+            }
+          },
+          "queries": [
+            {
+              "kind": "raw",
+              "spec": {
+                "name": "A",
+                "plugin": {
+                  "kind": "signoz/BuilderQuery",
+                  "spec": {
+                    "name": "A",
+                    "signal": "logs",
+                    "source": "",
+                    "disabled": false,
+                    "filter": {
+                      "expression": "resource.service.name = 'self-heal-incident-live' AND self_heal.stage != 'heartbeat'"
+                    },
+                    "order": [
+                      {
+                        "key": {
+                          "name": "timestamp",
+                          "signal": "",
+                          "fieldContext": "",
+                          "fieldDataType": ""
+                        },
+                        "direction": "desc"
+                      },
+                      {
+                        "key": {
+                          "name": "id",
+                          "signal": "",
+                          "fieldContext": "",
+                          "fieldDataType": ""
+                        },
+                        "direction": "desc"
+                      }
+                    ],
+                    "selectFields": [
+                      {
+                        "name": "timestamp",
+                        "signal": "logs",
+                        "fieldContext": "log",
+                        "fieldDataType": ""
+                      },
+                      {
+                        "name": "self_heal.service",
+                        "fieldContext": "attribute",
+                        "fieldDataType": "string",
+                        "signal": "logs"
+                      },
+                      {
+                        "name": "self_heal.stage",
+                        "signal": "logs",
+                        "fieldContext": "attribute",
+                        "fieldDataType": "string"
+                      },
+                      {
+                        "name": "body",
+                        "signal": "logs",
+                        "fieldContext": "log",
+                        "fieldDataType": "string"
+                      }
+                    ],
+                    "limit": 100,
+                    "legend": ""
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      },
+      "traffic": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Requests per minute by service",
+            "description": ""
+          },
+          "plugin": {
+            "kind": "signoz/TimeSeriesPanel",
+            "spec": {
+              "visualization": {
+                "timePreference": "global_time",
+                "fillSpans": false
+              },
+              "formatting": {
+                "unit": "none",
+                "decimalPrecision": "2"
+              },
+              "chartAppearance": {
+                "lineInterpolation": "spline",
+                "showPoints": false,
+                "lineStyle": "solid",
+                "fillMode": "none",
+                "spanGaps": {
+                  "fillOnlyBelow": false,
+                  "fillLessThan": ""
+                }
+              },
+              "axes": {
+                "softMin": 0,
+                "softMax": 0,
+                "isLogScale": false
+              },
+              "legend": {
+                "position": "bottom",
+                "mode": "list",
+                "customColors": null
+              },
+              "thresholds": null
+            }
+          },
+          "queries": [
+            {
+              "kind": "time_series",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "clickhouse_sql",
+                        "spec": {
+                          "name": "A",
+                          "query": "SELECT toStartOfMinute(timestamp) AS ts, serviceName AS service, toFloat64(count()) AS value FROM signoz_traces.signoz_index_v3 WHERE serviceName IN ('payment-repair-lab','recommendation-repair-lab','quote-repair-lab') AND kind=2 AND resources_string['service.namespace']='self-heal-repair-lab' AND timestamp >= fromUnixTimestamp64Milli($start_timestamp_ms) AND timestamp <= fromUnixTimestamp64Milli($end_timestamp_ms) GROUP BY ts, service ORDER BY ts",
+                          "disabled": false,
+                          "legend": ""
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "links": []
+        }
+      }
+    },
+    "layouts": [
+      {
+        "kind": "Grid",
+        "spec": {
+          "display": {
+            "title": "Incident Live",
+            "collapse": {
+              "open": true
+            }
+          },
+          "items": [
+            {
+              "x": 0,
+              "y": 6,
+              "width": 12,
+              "height": 4,
+              "content": {
+                "$ref": "#/spec/panels/guide"
+              }
+            },
+            {
+              "x": 0,
+              "y": 10,
+              "width": 6,
+              "height": 6,
+              "content": {
+                "$ref": "#/spec/panels/errors"
+              }
+            },
+            {
+              "x": 6,
+              "y": 10,
+              "width": 6,
+              "height": 6,
+              "content": {
+                "$ref": "#/spec/panels/traffic"
+              }
+            },
+            {
+              "x": 0,
+              "y": 16,
+              "width": 12,
+              "height": 10,
+              "content": {
+                "$ref": "#/spec/panels/timeline"
+              }
+            },
+            {
+              "x": 0,
+              "y": 26,
+              "width": 12,
+              "height": 9,
+              "content": {
+                "$ref": "#/spec/panels/evidence"
+              }
+            },
+            {
+              "x": 0,
+              "y": 35,
+              "width": 12,
+              "height": 7,
+              "content": {
+                "$ref": "#/spec/panels/delivery"
+              }
+            },
+            {
+              "x": 0,
+              "y": 42,
+              "width": 12,
+              "height": 5,
+              "content": {
+                "$ref": "#/spec/panels/heartbeat"
+              }
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "width": 4,
+              "height": 3,
+              "content": {
+                "$ref": "#/spec/panels/incident_total"
+              }
+            },
+            {
+              "x": 4,
+              "y": 0,
+              "width": 4,
+              "height": 3,
+              "content": {
+                "$ref": "#/spec/panels/incident_ongoing"
+              }
+            },
+            {
+              "x": 8,
+              "y": 0,
+              "width": 4,
+              "height": 3,
+              "content": {
+                "$ref": "#/spec/panels/incident_resolved"
+              }
+            },
+            {
+              "x": 0,
+              "y": 3,
+              "width": 3,
+              "height": 3,
+              "content": {
+                "$ref": "#/spec/panels/time_investigation"
+              }
+            },
+            {
+              "x": 3,
+              "y": 3,
+              "width": 3,
+              "height": 3,
+              "content": {
+                "$ref": "#/spec/panels/time_fix"
+              }
+            },
+            {
+              "x": 6,
+              "y": 3,
+              "width": 3,
+              "height": 3,
+              "content": {
+                "$ref": "#/spec/panels/time_deploy"
+              }
+            },
+            {
+              "x": 9,
+              "y": 3,
+              "width": 3,
+              "height": 3,
+              "content": {
+                "$ref": "#/spec/panels/time_total"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "duration": "",
+    "refreshInterval": "",
+    "links": null
+  },
+  "generateName": true
+}

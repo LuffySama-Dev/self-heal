@@ -1,0 +1,7 @@
+run,pair,condition,wall_seconds,repair_pass,passed_leaf_tests,graph_calls,file_reads,source_searches,tool_calls,input_tokens,output_tokens,cache_read_tokens,total_tokens,api_calls,source_unchanged
+1,1,source,67.494,True,70,0,8,9,17,31278,2321,57472,91071,7,True
+2,1,graphify,62.968,True,70,3,8,5,17,23942,2245,57600,83787,6,True
+3,2,graphify,53.34,True,70,2,5,3,11,19683,1812,38656,60151,5,True
+4,2,source,68.942,True,70,0,9,9,18,29280,2266,112896,144442,8,True
+5,3,source,77.054,True,70,0,12,11,23,50629,2677,78464,131770,8,True
+6,3,graphify,67.428,True,70,2,7,5,15,23513,2204,57216,82933,6,True

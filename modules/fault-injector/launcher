@@ -1,0 +1,5 @@
+#!/usr/bin/python3
+import os, sys
+sys.path.insert(0,os.environ.get('SELF_HEAL_INSTALL_DIR','/opt/self-heal-injector'))
+from injector import main
+main()

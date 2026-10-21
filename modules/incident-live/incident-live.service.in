@@ -1,0 +1,14 @@
+[Unit]
+Description=Incident Live read-only Hermes evidence exporter
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 "@REPO@/modules/incident-live/bridge.py"
+Environment="SELF_HEAL_CONFIG=@CONFIG@"
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target

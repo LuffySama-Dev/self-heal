@@ -1,0 +1,10 @@
+run,condition,wall_seconds,score,graph_queries,tool_calls_reported,api_calls_reported,input_tokens_reported,output_tokens_reported,cache_read_tokens_reported,total_tokens_reported,source_unchanged,exit_code
+1,baseline,37.509,6,0,6,5,20807,913,19072,40792,True,0
+2,graph,35.851,6,0,6,5,9731,937,25984,36652,True,0
+3,graph,36.648,6,0,7,5,21059,991,25728,47778,True,0
+4,baseline,35.208,6,0,6,5,18249,922,22016,41187,True,0
+5,baseline,34.76,6,0,8,4,10920,1046,18816,30782,True,0
+6,graph,36.103,6,0,6,5,9703,949,25984,36636,True,0
+7,graph-required,34.254,6,1,6,4,17574,920,13824,32318,True,0
+8,graph-required,38.412,6,2,7,5,12089,966,26112,39167,True,0
+9,graph-required,35.613,6,1,8,4,12080,1001,19712,32793,True,0

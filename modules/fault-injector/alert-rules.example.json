@@ -1,0 +1,215 @@
+{
+  "recommendation": {
+    "alert": "Repair lab - recommendation errors or latency",
+    "alertType": "TRACES_BASED_ALERT",
+    "description": "More than 20% failed or slower-than-1-second server requests over five minutes, sustained evaluation. Isolated lab.",
+    "ruleType": "threshold_rule",
+    "condition": {
+      "compositeQuery": {
+        "queries": [
+          {
+            "type": "clickhouse_sql",
+            "spec": {
+              "name": "A",
+              "query": "WITH {{.end_datetime}} AS evaluation_end,\npayment_spans AS (\n  SELECT timestamp, (has_error OR duration_nano >= 1000000000 OR traceID GLOBAL IN (SELECT traceID FROM signoz_traces.signoz_index_v3 WHERE timestamp >= evaluation_end - INTERVAL 7 MINUTE AND timestamp < evaluation_end AND serviceName = 'recommendation-repair-lab' AND kind = 1 AND has_error)) AS has_error\n  FROM signoz_traces.signoz_index_v3\n  WHERE timestamp >= evaluation_end - INTERVAL 7 MINUTE\n    AND timestamp < evaluation_end\n    AND serviceName = 'recommendation-repair-lab'\n    AND kind = 2\n    AND resources_string['service.namespace'] = 'self-heal-repair-lab'\n)\nSELECT evaluation_end - toIntervalMinute(number) AS ts,\n  toFloat64(if(\n    countIf(timestamp >= ts - INTERVAL 5 MINUTE AND timestamp < ts) >= 5,\n    100.0 * countIf(has_error AND timestamp >= ts - INTERVAL 5 MINUTE AND timestamp < ts)\n      / greatest(countIf(timestamp >= ts - INTERVAL 5 MINUTE AND timestamp < ts), 1),\n    0\n  )) AS value\nFROM numbers(3) AS evaluation_points\nLEFT JOIN payment_spans ON 1 = 1\nGROUP BY ts\nORDER BY ts\n",
+              "disabled": false,
+              "legend": ""
+            }
+          }
+        ],
+        "panelType": "graph",
+        "queryType": "clickhouse_sql",
+        "unit": "percent"
+      },
+      "selectedQueryName": "A",
+      "requireMinPoints": true,
+      "requiredNumPoints": 3,
+      "thresholds": {
+        "kind": "basic",
+        "spec": [
+          {
+            "name": "warning",
+            "target": 20,
+            "targetUnit": "",
+            "recoveryTarget": null,
+            "matchType": "all_the_times",
+            "op": "above",
+            "channels": [
+              "Self-Heal Hermes"
+            ]
+          }
+        ]
+      }
+    },
+    "labels": {
+      "service.name": "recommendation-repair-lab",
+      "service.namespace": "self-heal-repair-lab",
+      "severity": "warning"
+    },
+    "annotations": {
+      "description": "Investigate this isolated lab service. Read MULTISERVICE-LAB.md in the configured repair checkout. Verify telemetry and runtime identity before making changes.",
+      "summary": "recommendation lab requests unhealthy"
+    },
+    "disabled": true,
+    "version": "v5",
+    "evaluation": {
+      "kind": "rolling",
+      "spec": {
+        "evalWindow": "2m",
+        "frequency": "1m"
+      }
+    },
+    "schemaVersion": "v2alpha1",
+    "notificationSettings": {
+      "groupBy": [
+        "alertname"
+      ],
+      "renotify": {
+        "enabled": false
+      },
+      "usePolicy": false
+    }
+  },
+  "quote": {
+    "alert": "Repair lab - quote errors or latency",
+    "alertType": "TRACES_BASED_ALERT",
+    "description": "More than 20% failed or slower-than-1-second server requests over five minutes, sustained evaluation. Isolated lab.",
+    "ruleType": "threshold_rule",
+    "condition": {
+      "compositeQuery": {
+        "queries": [
+          {
+            "type": "clickhouse_sql",
+            "spec": {
+              "name": "A",
+              "query": "WITH {{.end_datetime}} AS evaluation_end,\npayment_spans AS (\n  SELECT timestamp, (has_error OR duration_nano >= 1000000000) AS has_error\n  FROM signoz_traces.signoz_index_v3\n  WHERE timestamp >= evaluation_end - INTERVAL 7 MINUTE\n    AND timestamp < evaluation_end\n    AND serviceName = 'quote-repair-lab'\n    AND kind = 2\n    AND resources_string['service.namespace'] = 'self-heal-repair-lab'\n)\nSELECT evaluation_end - toIntervalMinute(number) AS ts,\n  toFloat64(if(\n    countIf(timestamp >= ts - INTERVAL 5 MINUTE AND timestamp < ts) >= 5,\n    100.0 * countIf(has_error AND timestamp >= ts - INTERVAL 5 MINUTE AND timestamp < ts)\n      / greatest(countIf(timestamp >= ts - INTERVAL 5 MINUTE AND timestamp < ts), 1),\n    0\n  )) AS value\nFROM numbers(3) AS evaluation_points\nLEFT JOIN payment_spans ON 1 = 1\nGROUP BY ts\nORDER BY ts\n",
+              "disabled": false,
+              "legend": ""
+            }
+          }
+        ],
+        "panelType": "graph",
+        "queryType": "clickhouse_sql",
+        "unit": "percent"
+      },
+      "selectedQueryName": "A",
+      "requireMinPoints": true,
+      "requiredNumPoints": 3,
+      "thresholds": {
+        "kind": "basic",
+        "spec": [
+          {
+            "name": "warning",
+            "target": 20,
+            "targetUnit": "",
+            "recoveryTarget": null,
+            "matchType": "all_the_times",
+            "op": "above",
+            "channels": [
+              "Self-Heal Hermes"
+            ]
+          }
+        ]
+      }
+    },
+    "labels": {
+      "service.name": "quote-repair-lab",
+      "service.namespace": "self-heal-repair-lab",
+      "severity": "warning"
+    },
+    "annotations": {
+      "description": "Investigate this isolated lab service. Read MULTISERVICE-LAB.md in the configured repair checkout. Verify telemetry and runtime identity before making changes.",
+      "summary": "quote lab requests unhealthy"
+    },
+    "disabled": true,
+    "version": "v5",
+    "evaluation": {
+      "kind": "rolling",
+      "spec": {
+        "evalWindow": "2m",
+        "frequency": "1m"
+      }
+    },
+    "schemaVersion": "v2alpha1",
+    "notificationSettings": {
+      "groupBy": [
+        "alertname"
+      ],
+      "renotify": {
+        "enabled": false
+      },
+      "usePolicy": false
+    }
+  },
+  "payment": {
+    "alert": "Repair lab - Payment Charge code failure",
+    "alertType": "TRACES_BASED_ALERT",
+    "description": "Isolated code-defect experiment. Same >20% /5m minimum5 sustained2m rule as main demo; separate service and namespace.",
+    "ruleType": "threshold_rule",
+    "condition": {
+      "compositeQuery": {
+        "queries": [
+          {
+            "type": "clickhouse_sql",
+            "spec": {
+              "name": "A",
+              "query": "WITH {{.end_datetime}} AS evaluation_end,\npayment_spans AS (\n  SELECT timestamp, has_error\n  FROM signoz_traces.signoz_index_v3\n  WHERE timestamp >= evaluation_end - INTERVAL 7 MINUTE\n    AND timestamp < evaluation_end\n    AND serviceName = 'payment-repair-lab'\n    AND name = 'oteldemo.PaymentService/Charge'\n    AND kind = 2\n    AND resources_string['service.namespace'] = 'self-heal-repair-lab'\n)\nSELECT evaluation_end - toIntervalMinute(number) AS ts,\n  toFloat64(if(\n    countIf(timestamp >= ts - INTERVAL 5 MINUTE AND timestamp < ts) >= 5,\n    100.0 * countIf(has_error AND timestamp >= ts - INTERVAL 5 MINUTE AND timestamp < ts)\n      / greatest(countIf(timestamp >= ts - INTERVAL 5 MINUTE AND timestamp < ts), 1),\n    0\n  )) AS value\nFROM numbers(3) AS evaluation_points\nLEFT JOIN payment_spans ON 1 = 1\nGROUP BY ts\nORDER BY ts\n",
+              "disabled": false,
+              "legend": ""
+            }
+          }
+        ],
+        "panelType": "graph",
+        "queryType": "clickhouse_sql",
+        "unit": "percent"
+      },
+      "selectedQueryName": "A",
+      "requireMinPoints": true,
+      "requiredNumPoints": 3,
+      "thresholds": {
+        "kind": "basic",
+        "spec": [
+          {
+            "name": "warning",
+            "target": 20,
+            "targetUnit": "",
+            "recoveryTarget": null,
+            "matchType": "all_the_times",
+            "op": "above",
+            "channels": [
+              "Self-Heal Hermes"
+            ]
+          }
+        ]
+      }
+    },
+    "labels": {
+      "service.name": "payment-repair-lab",
+      "service.namespace": "self-heal-repair-lab",
+      "severity": "warning"
+    },
+    "annotations": {
+      "description": "Investigate this isolated lab service. Read MULTISERVICE-LAB.md in the configured repair checkout. Verify telemetry and runtime identity before making changes.",
+      "summary": "Repair lab Payment Charge failures"
+    },
+    "disabled": true,
+    "version": "v5",
+    "evaluation": {
+      "kind": "rolling",
+      "spec": {
+        "evalWindow": "2m",
+        "frequency": "1m"
+      }
+    },
+    "schemaVersion": "v2alpha1",
+    "notificationSettings": {
+      "groupBy": [
+        "alertname"
+      ],
+      "renotify": {
+        "enabled": false
+      },
+      "usePolicy": false
+    }
+  }
+}

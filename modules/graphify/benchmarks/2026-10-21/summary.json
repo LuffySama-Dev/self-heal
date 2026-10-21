@@ -1,0 +1,22 @@
+{
+  "source": {
+    "runs": 3,
+    "repair_passes": 3,
+    "median_seconds": 68.942,
+    "median_total_tokens": 131770,
+    "median_uncached_input_tokens": 31278
+  },
+  "graphify": {
+    "runs": 3,
+    "repair_passes": 3,
+    "median_seconds": 62.968,
+    "median_total_tokens": 82933,
+    "median_uncached_input_tokens": 23513
+  },
+  "paired_differences_seconds_graph_minus_source": [
+    -4.525999999999996,
+    -15.60199999999999,
+    -9.626000000000005
+  ],
+  "median_time_reduction_percent": 8.66525485190448
+}
